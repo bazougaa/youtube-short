@@ -2,12 +2,16 @@ import whisper
 import subprocess
 import os
 import argparse
+import sys
 from pathlib import Path
+# Add parent directory to sys.path to import ffmpeg_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ffmpeg_utils import FFMPEG_EXE
 
 def extract_audio(video_path, output_path="temp_audio.wav"):
     """Extract audio from video file using ffmpeg"""
     print(f"Extracting audio from: {video_path}")
-    command = f'ffmpeg -i "{video_path}" -ab 160k -ac 2 -ar 44100 -vn "{output_path}" -y'
+    command = f'"{FFMPEG_EXE}" -i "{video_path}" -ab 160k -ac 2 -ar 44100 -vn "{output_path}" -y'
     subprocess.call(command, shell=True)
     return output_path
 

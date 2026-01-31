@@ -7,6 +7,7 @@ import argparse
 import time
 from google import genai
 from typing import List, Dict, Any
+from ffmpeg_utils import FFMPEG_EXE, FFPROBE_EXE
 
 class LLMChapterGenerator:
     """Class to handle LLM API calls for identifying YouTube chapters"""
@@ -185,7 +186,7 @@ Ensure ALL timestamps are in the MM:SS or HH:MM:SS format required by YouTube.
 
 def extract_audio(video_path, output_path="temp_audio.wav"):
     """Extract audio from video file"""
-    command = f"ffmpeg -i {video_path} -ab 160k -ac 2 -ar 44100 -vn {output_path} -y"
+    command = f'"{FFMPEG_EXE}" -i "{video_path}" -ab 160k -ac 2 -ar 44100 -vn "{output_path}" -y'
     subprocess.call(command, shell=True)
     return output_path
 
@@ -212,7 +213,7 @@ def transcribe_audio(audio_path, whisper_model_size="base"):
 
 def get_video_duration(video_path):
     """Get the duration of the video in seconds"""
-    cmd = f'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{video_path}"'
+    cmd = f'"{FFPROBE_EXE}" -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "{video_path}"'
     output = subprocess.check_output(cmd, shell=True).decode('utf-8').strip()
     return float(output)
 

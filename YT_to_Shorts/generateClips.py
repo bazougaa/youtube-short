@@ -9,9 +9,11 @@ import requests
 import argparse
 import time
 import textwrap
+import shutil
 from typing import List, Dict, Any
 from google import genai
 from collections import deque
+from ffmpeg_utils import FFMPEG_EXE
 
 # Free LLM API options - we'll use Google Gemini API with a rate limit for free tier
 # Alternative options include HuggingFace Inference API or other free tier services
@@ -281,7 +283,7 @@ def get_youtube_captions(yt):
 def extract_audio(video_path, output_path="temp_audio.wav"):
     """Extract audio from video file"""
     # Quote the paths to handle spaces
-    command = f'ffmpeg -i "{video_path}" -ab 160k -ac 2 -ar 44100 -vn "{output_path}" -y'
+    command = f'"{FFMPEG_EXE}" -i "{video_path}" -ab 160k -ac 2 -ar 44100 -vn "{output_path}" -y'
     subprocess.call(command, shell=True)
     return output_path
 
@@ -604,7 +606,7 @@ def create_clip(video_path, clip, output_path, captions=True, bg_color=(255, 255
     # Extract the clip from the original video with FFmpeg
     temp_video = f"{output_path}_temp.mp4"
     # Quote the paths to handle spaces
-    extract_cmd = f'ffmpeg -ss {start_time} -i "{video_path}" -t {duration} -c:v copy -c:a copy "{temp_video}" -y'
+    extract_cmd = f'"{FFMPEG_EXE}" -ss {start_time} -i "{video_path}" -t {duration} -c:v copy -c:a copy "{temp_video}" -y'
     print(f"Extracting clip: {extract_cmd}")
     subprocess.call(extract_cmd, shell=True)
     
@@ -923,7 +925,7 @@ def create_clip(video_path, clip, output_path, captions=True, bg_color=(255, 255
     # Combine processed video with the audio from the extracted clip
     final_output = f"{output_path}"
     # Quote the paths to handle spaces
-    combine_cmd = f'ffmpeg -i "{output_path}_processed.mp4" -i "{temp_video}" -c:v copy -map 0:v:0 -map 1:a:0 -shortest "{final_output}" -y'
+    combine_cmd = f'"{FFMPEG_EXE}" -i "{output_path}_processed.mp4" -i "{temp_video}" -c:v copy -map 0:v:0 -map 1:a:0 -shortest "{final_output}" -y'
     print(f"Adding audio: {combine_cmd}")
     subprocess.call(combine_cmd, shell=True)
     

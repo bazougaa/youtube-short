@@ -3,10 +3,13 @@ import os
 import json
 import tempfile
 import time
+import shutil
+import subprocess
 from pathlib import Path
 import generateClips as gc
 import cv2
 from dotenv import load_dotenv
+from ffmpeg_utils import FFMPEG_EXE, FFPROBE_EXE
 
 # Load environment variables
 load_dotenv()
@@ -18,6 +21,18 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+
+# Debug FFmpeg
+with st.sidebar:
+    with st.expander("🛠️ System Debug"):
+        st.write(f"**FFmpeg Path:** `{FFMPEG_EXE}`")
+        st.write(f"**FFprobe Path:** `{FFPROBE_EXE}`")
+        if st.button("Check FFmpeg Version"):
+            try:
+                result = subprocess.check_output(f'"{FFMPEG_EXE}" -version', shell=True, stderr=subprocess.STDOUT).decode()
+                st.code(result.split('\n')[0])
+            except Exception as e:
+                st.error(f"Error: {e}")
 
 # Initialize Session State
 if 'transcription' not in st.session_state:
@@ -153,6 +168,7 @@ if input_method == "YouTube URL":
                         'outtmpl': os.path.join(st.session_state.temp_dir, '%(id)s.%(ext)s'),
                         'quiet': True,
                         'no_warnings': True,
+                        'ffmpeg_location': FFMPEG_EXE,
                     }
                     
                     with yt_dlp.YoutubeDL(ydl_opts) as ydl:

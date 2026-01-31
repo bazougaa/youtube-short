@@ -1,4 +1,3 @@
-self.api_key = api_key or os.getenv("AIzaSyBjgX82dnrdQG9pk7HLFeHzwzjGGpxyJNY")
 import os
 import subprocess
 import numpy as np
@@ -10,10 +9,11 @@ import argparse
 import textwrap
 from typing import List, Dict, Any, Tuple
 from collections import deque
+from ffmpeg_utils import FFMPEG_EXE
 
 def extract_audio(video_path, output_path="temp_audio.wav"):
     """Extract audio from video file"""
-    command = f"ffmpeg -i {video_path} -ab 160k -ac 2 -ar 44100 -vn {output_path} -y"
+    command = f'"{FFMPEG_EXE}" -i "{video_path}" -ab 160k -ac 2 -ar 44100 -vn "{output_path}" -y'
     subprocess.call(command, shell=True)
     return output_path
 
@@ -559,7 +559,7 @@ def caption_video(video_path, output_path, segments, bg_color=(255, 255, 255, 0)
     
     # Add audio to the captioned video
     final_output = f"{output_path}"
-    combine_cmd = f"ffmpeg -i {output_path}_temp.mp4 -i {video_path} -c:v copy -map 0:v:0 -map 1:a:0 -shortest {final_output} -y"
+    combine_cmd = f'"{FFMPEG_EXE}" -i "{output_path}_temp.mp4" -i "{video_path}" -c:v copy -map 0:v:0 -map 1:a:0 -shortest "{final_output}" -y'
     print(f"Adding audio: {combine_cmd}")
     subprocess.call(combine_cmd, shell=True)
     

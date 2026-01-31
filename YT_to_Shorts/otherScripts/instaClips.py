@@ -9,10 +9,14 @@ import textwrap
 import time
 from PIL import Image, ImageDraw, ImageFont
 import json
+import sys
+# Add parent directory to sys.path to import ffmpeg_utils
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ffmpeg_utils import FFMPEG_EXE
 
 def extract_audio(video_path, output_path="temp_audio.wav"):
     """Extract audio from video file"""
-    command = f"ffmpeg -i {video_path} -ab 160k -ac 2 -ar 44100 -vn {output_path} -y"
+    command = f'"{FFMPEG_EXE}" -i "{video_path}" -ab 160k -ac 2 -ar 44100 -vn "{output_path}" -y'
     subprocess.call(command, shell=True)
     return output_path
 
@@ -268,7 +272,7 @@ def create_instagram_clip_opencv(video_path, segment, output_path, keyword="Day"
     # Instead of trying to seek with OpenCV, extract the exact video segment with FFmpeg first
     temp_video_path = f"{output_path}_segment.mp4"
     clip_duration = segment["end"] - segment["start"]
-    extract_cmd = f"ffmpeg -ss {segment['start']:.6f} -i {video_path} -t {clip_duration:.6f} -c:v copy -c:a copy {temp_video_path} -y"
+    extract_cmd = f'"{FFMPEG_EXE}" -ss {segment["start"]:.6f} -i "{video_path}" -t {clip_duration:.6f} -c:v copy -c:a copy "{temp_video_path}" -y'
     
     print(f"Extracting exact segment with FFmpeg: {extract_cmd}")
     subprocess.call(extract_cmd, shell=True)
@@ -428,7 +432,7 @@ def create_instagram_clip_opencv(video_path, segment, output_path, keyword="Day"
     print(f"Expected duration: {frames_processed / fps:.2f} seconds")
     
     # Now combine our processed video with the audio from the original video segment
-    command = f"ffmpeg -i {output_path}_temp.mp4 -i {temp_video_path} -c:v copy -map 0:v:0 -map 1:a:0 -shortest {output_path} -y"
+    command = f'"{FFMPEG_EXE}" -i "{output_path}_temp.mp4" -i "{temp_video_path}" -c:v copy -map 0:v:0 -map 1:a:0 -shortest "{output_path}" -y'
     print(f"Adding audio: {command}")
     subprocess.call(command, shell=True)
     
