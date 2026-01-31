@@ -5,4 +5,5 @@ Pillow
 streamlit
 google-genai
 pytubefix>=8.5.0
+yt-dlp
 python-dotenv

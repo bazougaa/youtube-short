@@ -143,42 +143,49 @@ if input_method == "YouTube URL":
         if st.button("📥 Download Video"):
             with st.status("Downloading from YouTube...", expanded=True) as status:
                 try:
-                    from pytubefix import YouTube
+                    import yt_dlp
                     
-                    # Removed client='CHROME' as it caused a KeyError. 
-                    # Using allow_oauth_cache=True to help with persistent sessions.
-                    yt = YouTube(
-                        youtube_url, 
-                        use_oauth=False, 
-                        allow_oauth_cache=True
-                    )
-                    status.write(f"Found video: {yt.title}")
+                    # Configure yt-dlp options
+                    # We want the best quality mp4 that is compatible (usually 720p or 1080p)
+                    # Streamlit Cloud has ffmpeg (via our packages.txt), so we can merge streams if needed
+                    ydl_opts = {
+                        'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+                        'outtmpl': os.path.join(st.session_state.temp_dir, '%(id)s.%(ext)s'),
+                        'quiet': True,
+                        'no_warnings': True,
+                    }
                     
-                    # Download video
-                    # We download the highest resolution progressive stream (video+audio) for simplicity
-                    # or separate streams if needed. For editing, a standard 720p/1080p mp4 is fine.
-                    stream = yt.streams.get_highest_resolution()
-                    
-                    filename = f"{yt.video_id}.mp4"
-                    download_path = os.path.join(st.session_state.temp_dir, filename)
-                    
-                    status.write("Downloading...")
-                    stream.download(output_path=st.session_state.temp_dir, filename=filename)
-                    
-                    st.session_state.video_path = download_path
-                    
-                    # Try to fetch captions
-                    status.write("Checking for YouTube captions...")
-                    captions = gc.get_youtube_captions(yt)
-                    if captions:
-                        st.session_state.youtube_captions = captions
-                        status.write("✅ Found YouTube captions!")
-                    else:
-                        st.session_state.youtube_captions = None
-                        status.write("No captions found, will use Whisper.")
+                    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+                        status.write("Extracting video info...")
+                        info = ydl.extract_info(youtube_url, download=True)
+                        video_id = info.get('id', 'video')
+                        title = info.get('title', 'Unknown Title')
+                        ext = info.get('ext', 'mp4')
                         
-                    status.update(label="Download complete!", state="complete", expanded=False)
-                    st.success(f"Downloaded: {yt.title}")
+                        download_path = os.path.join(st.session_state.temp_dir, f"{video_id}.{ext}")
+                        st.session_state.video_path = download_path
+                        
+                        status.write(f"Found video: {title}")
+                        status.write("Download complete!")
+
+                    # Handle Captions (using pytubefix for caption extraction as it's already integrated)
+                    try:
+                        from pytubefix import YouTube
+                        yt = YouTube(youtube_url)
+                        status.write("Checking for YouTube captions...")
+                        captions = gc.get_youtube_captions(yt)
+                        if captions:
+                            st.session_state.youtube_captions = captions
+                            status.write("✅ Found YouTube captions!")
+                        else:
+                            st.session_state.youtube_captions = None
+                            status.write("No captions found, will use Whisper.")
+                    except:
+                        st.session_state.youtube_captions = None
+                        status.write("Could not fetch YouTube captions, will use Whisper.")
+                        
+                    status.update(label="Process complete!", state="complete", expanded=False)
+                    st.success(f"Downloaded: {title}")
                     
                 except Exception as e:
                     st.error(f"Error downloading video: {e}")
