@@ -24,7 +24,7 @@ def transcribe_audio(audio_path, whisper_model_size="base"):
     model = whisper.load_model(whisper_model_size)
     
     print(f"Transcribing audio file: {audio_path}")
-    result = model.transcribe(audio_path, word_timestamps=True)
+    result = model.transcribe(audio_path, word_timestamps=True, fp16=False)
     
     # Extract segments from the result
     segments = []

@@ -28,7 +28,7 @@ def transcribe_video(video_path, output_path=None, model_size="base"):
         
         # Transcribe audio
         print("Transcribing audio...")
-        result = model.transcribe(audio_path)
+        result = model.transcribe(audio_path, fp16=False)
         
         # Write transcription to file
         print(f"Writing transcription to: {output_path}")

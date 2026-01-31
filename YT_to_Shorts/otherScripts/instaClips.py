@@ -22,7 +22,7 @@ def transcribe_audio(video_path, audio_path, keyword="Day", min_duration=45, max
     model = whisper.load_model("small")
     
     print(f"Transcribing audio file: {audio_path}")
-    result = model.transcribe(audio_path, word_timestamps=True)
+    result = model.transcribe(audio_path, word_timestamps=True, fp16=False)
     
     segments = []
     

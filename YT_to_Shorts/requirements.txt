@@ -3,6 +3,6 @@ numpy
 openai-whisper
 Pillow
 streamlit
-google-generativeai
+google-genai
 pytubefix
 python-dotenv

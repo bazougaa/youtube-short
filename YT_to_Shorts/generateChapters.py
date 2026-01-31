@@ -5,7 +5,7 @@ import json
 import whisper
 import argparse
 import time
-import google.generativeai as genai
+from google import genai
 from typing import List, Dict, Any
 
 class LLMChapterGenerator:
@@ -23,8 +23,7 @@ class LLMChapterGenerator:
             
         # Configure the Gemini API client
         try:
-            genai.configure(api_key=self.api_key)
-            self.model = genai.GenerativeModel(self.model_name)
+            self.client = genai.Client(api_key=self.api_key)
             self.use_gemini = True
         except Exception as e:
             print(f"Failed to initialize Gemini API: {e}")
@@ -88,7 +87,10 @@ Ensure ALL timestamps are in the MM:SS or HH:MM:SS format required by YouTube.
     def _call_gemini_api(self, prompt):
         """Call Gemini API with proper error handling"""
         try:
-            response = self.model.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt
+            )
             content = response.text
             
             # Try to parse the JSON from the response
@@ -194,7 +196,7 @@ def transcribe_audio(audio_path, whisper_model_size="base"):
     model = whisper.load_model(whisper_model_size)
     
     print(f"Transcribing audio file: {audio_path}")
-    result = model.transcribe(audio_path)
+    result = model.transcribe(audio_path, fp16=False)
     
     # Extract segments from the result
     segments = []
