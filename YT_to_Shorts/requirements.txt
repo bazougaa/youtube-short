@@ -1,10 +1,8 @@
-## Prerequisites
-
-```bash
-pip install opencv-python-headless numpy moviepy openai-whisper textwrap3 Pillow streamlit google-generativeai pytubefix python-dotenv
-```
-
-You'll also need FFmpeg installed on your system:
-- **Windows**: Download from [FFmpeg website](https://ffmpeg.org/download.html) and add to PATH
-- **Linux**: `sudo apt-get install ffmpeg`
-- **macOS**: `brew install ffmpeg`
+opencv-python-headless
+numpy
+openai-whisper
+Pillow
+streamlit
+google-generativeai
+pytubefix
+python-dotenv
