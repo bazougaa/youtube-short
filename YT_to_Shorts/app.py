@@ -145,10 +145,10 @@ if input_method == "YouTube URL":
                 try:
                     from pytubefix import YouTube
                     
-                    # Using client='CHROME' and use_oauth=True to bypass 403 Forbidden errors
+                    # Removed client='CHROME' as it caused a KeyError. 
+                    # Using allow_oauth_cache=True to help with persistent sessions.
                     yt = YouTube(
                         youtube_url, 
-                        client='CHROME', 
                         use_oauth=False, 
                         allow_oauth_cache=True
                     )
