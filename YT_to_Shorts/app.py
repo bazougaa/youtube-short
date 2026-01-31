@@ -145,7 +145,13 @@ if input_method == "YouTube URL":
                 try:
                     from pytubefix import YouTube
                     
-                    yt = YouTube(youtube_url)
+                    # Using client='CHROME' and use_oauth=True to bypass 403 Forbidden errors
+                    yt = YouTube(
+                        youtube_url, 
+                        client='CHROME', 
+                        use_oauth=False, 
+                        allow_oauth_cache=True
+                    )
                     status.write(f"Found video: {yt.title}")
                     
                     # Download video

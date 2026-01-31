@@ -4,5 +4,5 @@ openai-whisper
 Pillow
 streamlit
 google-genai
-pytubefix
+pytubefix>=8.5.0
 python-dotenv
