@@ -16,8 +16,9 @@ def get_ffmpeg_path():
     if system == "Windows":
         possible_paths = [
             os.path.join(os.getcwd(), "ffmpeg.exe"),
-            r"C:\ProgramData\chocolatey\lib\ffmpeg\tools\ffmpeg\bin\ffmpeg.exe",
+            os.path.join(os.path.dirname(os.getcwd()), "ffmpeg.exe"),
             r"C:\ProgramData\chocolatey\bin\ffmpeg.exe",
+            r"C:\ProgramData\chocolatey\lib\ffmpeg\tools\ffmpeg\bin\ffmpeg.exe",
             r"C:\ffmpeg\bin\ffmpeg.exe",
             r"C:\Program Files\ffmpeg\bin\ffmpeg.exe",
             r"C:\Program Files (x86)\ffmpeg\bin\ffmpeg.exe",
@@ -26,6 +27,7 @@ def get_ffmpeg_path():
         # Linux / MacOS common paths
         possible_paths = [
             os.path.join(os.getcwd(), "ffmpeg"),
+            os.path.join(os.path.dirname(os.getcwd()), "ffmpeg"),
             "/usr/bin/ffmpeg",
             "/usr/local/bin/ffmpeg",
             "/opt/homebrew/bin/ffmpeg", # Apple Silicon
@@ -52,8 +54,9 @@ def get_ffprobe_path():
     if system == "Windows":
         possible_paths = [
             os.path.join(os.getcwd(), "ffprobe.exe"),
-            r"C:\ProgramData\chocolatey\lib\ffmpeg\tools\ffmpeg\bin\ffprobe.exe",
+            os.path.join(os.path.dirname(os.getcwd()), "ffprobe.exe"),
             r"C:\ProgramData\chocolatey\bin\ffprobe.exe",
+            r"C:\ProgramData\chocolatey\lib\ffmpeg\tools\ffmpeg\bin\ffprobe.exe",
             r"C:\ffmpeg\bin\ffprobe.exe",
             r"C:\Program Files\ffmpeg\bin\ffprobe.exe",
             r"C:\Program Files (x86)\ffmpeg\bin\ffprobe.exe",
@@ -62,6 +65,7 @@ def get_ffprobe_path():
         # Linux / MacOS common paths
         possible_paths = [
             os.path.join(os.getcwd(), "ffprobe"),
+            os.path.join(os.path.dirname(os.getcwd()), "ffprobe"),
             "/usr/bin/ffprobe",
             "/usr/local/bin/ffprobe",
             "/opt/homebrew/bin/ffprobe", # Apple Silicon

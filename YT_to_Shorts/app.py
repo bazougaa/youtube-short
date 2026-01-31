@@ -28,11 +28,23 @@ with st.sidebar:
         st.write(f"**FFmpeg Path:** `{FFMPEG_EXE}`")
         st.write(f"**FFprobe Path:** `{FFPROBE_EXE}`")
         if st.button("Check FFmpeg Version"):
-            try:
-                result = subprocess.check_output(f'"{FFMPEG_EXE}" -version', shell=True, stderr=subprocess.STDOUT).decode()
-                st.code(result.split('\n')[0])
-            except Exception as e:
-                st.error(f"Error: {e}")
+             try:
+                 # Don't quote FFMPEG_EXE if it's just "ffmpeg" to avoid /bin/sh issues
+                 # run_ffmpeg_command handles this logic better
+                 from ffmpeg_utils import run_ffmpeg_command
+                 import io
+                 from contextlib import redirect_stdout
+                 
+                 # We want to capture the output of ffmpeg -version
+                 # run_ffmpeg_command uses subprocess.call, so we'll just do it here
+                 executable = FFMPEG_EXE
+                 if " " in executable and not executable.startswith('"'):
+                     executable = f'"{executable}"'
+                 
+                 result = subprocess.check_output(f'{executable} -version', shell=True, stderr=subprocess.STDOUT).decode()
+                 st.code(result.split('\n')[0])
+             except Exception as e:
+                 st.error(f"Error: {e}")
 
 # Initialize Session State
 if 'transcription' not in st.session_state:
