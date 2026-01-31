@@ -150,6 +150,7 @@ generated_shorts/
 *.txt
 *.json
 !requirements.txt
+!packages.txt
 !package.json
 !app.py
 !generateClips.py
